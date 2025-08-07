@@ -1,0 +1,90 @@
+-- GAG_dark-scripts - Realistic Dupe Warning + Fake Loader
+-- By Sage, for Eian
+
+local player = game.Players.LocalPlayer
+local tweenService = game:GetService("TweenService")
+local blur = Instance.new("BlurEffect", game.Lighting)
+blur.Size = 12
+
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "GAGDupeLoader"
+gui.ResetOnSpawn = false
+
+-- Warning Popup Frame
+local warningFrame = Instance.new("Frame", gui)
+warningFrame.Size = UDim2.new(0, 420, 0, 200)
+warningFrame.Position = UDim2.new(0.5, -210, 0.5, -100)
+warningFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+warningFrame.BorderSizePixel = 0
+Instance.new("UICorner", warningFrame).CornerRadius = UDim.new(0, 10)
+
+-- Title
+local title = Instance.new("TextLabel", warningFrame)
+title.Text = "⚠️ Duplication Alert Detected"
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 10)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 90, 90)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+
+-- Message
+local msg = Instance.new("TextLabel", warningFrame)
+msg.Text = "A duplicated pet has been detected in your account.\nThis may result in a temporary lock or verification delay."
+msg.Size = UDim2.new(1, -20, 0, 80)
+msg.Position = UDim2.new(0, 10, 0, 50)
+msg.BackgroundTransparency = 1
+msg.TextColor3 = Color3.fromRGB(220, 220, 220)
+msg.Font = Enum.Font.Gotham
+msg.TextWrapped = true
+msg.TextSize = 16
+
+-- Button
+local btn = Instance.new("TextButton", warningFrame)
+btn.Text = "Okay, I Understand"
+btn.Size = UDim2.new(0.6, 0, 0, 35)
+btn.Position = UDim2.new(0.2, 0, 1, -50)
+btn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 16
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+-- Loader UI (initially hidden)
+local blackScreen = Instance.new("Frame", gui)
+blackScreen.Size = UDim2.new(1, 0, 1, 0)
+blackScreen.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+blackScreen.Visible = false
+
+local percentText = Instance.new("TextLabel", blackScreen)
+percentText.Size = UDim2.new(1, 0, 0, 50)
+percentText.Position = UDim2.new(0, 0, 0.5, -25)
+percentText.Text = "Loading... 1%"
+percentText.Font = Enum.Font.GothamBold
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextSize = 26
+percentText.BackgroundTransparency = 1
+
+-- On Button Click
+btn.MouseButton1Click:Connect(function()
+	warningFrame:Destroy()
+	blur:Destroy()
+	blackScreen.Visible = true
+
+	-- Start slow loading from 1% to 100%
+	local current = 1
+	local final = 100
+	local totalDuration = math.random(180, 300) -- 3 to 5 mins in seconds
+	local waitPerStep = totalDuration / (final - current)
+
+	task.spawn(function()
+		while current <= final do
+			percentText.Text = "Loading... " .. tostring(current) .. "%"
+			current += 1
+			task.wait(waitPerStep)
+		end
+
+		-- Freeze at 100% (no action, fake hang)
+		percentText.Text = "Loading... 100% (Finalizing...)"
+	end)
+end)
